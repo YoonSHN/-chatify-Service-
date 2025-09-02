@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name="jwt_refresh_token")
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
-public class jwtRefreshToken {
+public class JwtRefreshToken {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -39,8 +39,8 @@ public class jwtRefreshToken {
     @Column(name="ip_address", length=45)
     private String ipAddress;
 
-    public static jwtRefreshToken create(User user, String tokenHash, LocalDateTime expiresAt, String deviceId, String ipAddress){
-        jwtRefreshToken token = new jwtRefreshToken();
+    public static JwtRefreshToken create(User user, String tokenHash, LocalDateTime expiresAt, String deviceId, String ipAddress){
+        JwtRefreshToken token = new JwtRefreshToken();
         token.user = user;
         token.tokenHash = tokenHash;
         token.expiresAt = expiresAt;
@@ -48,7 +48,7 @@ public class jwtRefreshToken {
         token.ipAddress = ipAddress;
         return token;
     }
-    public static jwtRefreshToken create(User user, String tokenHash, LocalDateTime expiresAt){
+    public static JwtRefreshToken create(User user, String tokenHash, LocalDateTime expiresAt){
         return create(user, tokenHash, expiresAt, null,null);
     }
 }

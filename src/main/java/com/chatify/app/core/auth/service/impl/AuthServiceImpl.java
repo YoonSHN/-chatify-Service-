@@ -1,11 +1,13 @@
 package com.chatify.app.core.auth.service.impl;
 
+import com.chatify.app.core.auth.domain.JwtRefreshToken;
 import com.chatify.app.core.auth.dto.request.LoginRequest;
 import com.chatify.app.core.auth.dto.request.SendCodeRequest;
 import com.chatify.app.core.auth.dto.request.SignupRequest;
 import com.chatify.app.core.auth.dto.request.VerifyCodeRequest;
 import com.chatify.app.core.auth.dto.response.TokenResponse;
 import com.chatify.app.core.auth.dto.response.VerificationToken;
+import com.chatify.app.core.auth.repository.JwtRefreshTokenRepository;
 import com.chatify.app.core.auth.service.AuthService;
 import com.chatify.app.core.auth.service.EmailService;
 import com.chatify.app.core.user.domain.User;
@@ -13,6 +15,7 @@ import com.chatify.app.core.user.domain.UserProfile;
 import com.chatify.app.core.user.domain.UserSettings;
 import com.chatify.app.core.user.repository.UserRepository;
 import com.chatify.app.common.util.JwtUtil;
+import com.chatify.app.common.util.JwtUtil.TokenInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final StringRedisTemplate redisTemplate;
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtRefreshTokenRepository jwtRefreshTokenRepository;
 
     private static final String VERIFICATION_CODE_PREFIX = "verify:code=>";
 
@@ -108,19 +111,42 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public TokenResponse login(LoginRequest loginRequest){
-        // 1. ID/PW를 기반으로 인증용 객체(UsernamePasswordAuthenticationToken) 생성
+    public TokenResponse login(LoginRequest loginRequest) {
+        // 1. ID/PW 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
 
+        // 2. 비밀번호 대조 등 실제 검증
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        String accessToken = jwtUtil.createAccessToken(authentication);
-        String refreshToken = jwtUtil.createRefreshToken(authentication);
+        // --- 여기서부터 수정된 로직 ---
 
+        // 3. 인증된 사용자 정보(email)를 가져옴
+        String email = authentication.getName();
+
+        // 4. Access Token 생성
+        String accessToken = jwtUtil.createAccessToken(email);
+
+        // 5. Refresh Token 생성 (토큰 문자열 + 만료 시간 정보)
+        TokenInfo refreshTokenInfo = jwtUtil.createRefreshToken(email);
+        String refreshToken = refreshTokenInfo.getToken();
+
+        // 6. Refresh Token을 데이터베이스에 저장
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // TODO: deviceId, ipAddress는 실제 HttpServletRequest에서 추출하여 전달해야 합니다.
+        JwtRefreshToken refreshTokenEntity = JwtRefreshToken.create(
+                user,
+                refreshToken, // 실제 토큰 문자열
+                refreshTokenInfo.getExpiresAt(), // 만료 시간
+                null, // deviceId
+                null  // ipAddress
+        );
+        jwtRefreshTokenRepository.save(refreshTokenEntity);
+
+        // 7. 생성된 토큰들을 DTO에 담아 반환
         return new TokenResponse(accessToken, refreshToken);
-
-
     }
 
 
