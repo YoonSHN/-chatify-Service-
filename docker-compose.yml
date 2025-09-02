@@ -1,0 +1,68 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    networks:
+      - chatify-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+  mysql:
+    image: mysql:8.0
+    container_name: ${DB_HOST}
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h","127.0.0.1","-pqwe123!@#"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - chatify-net
+
+  app:
+    build: .
+    env_file:
+      - ./.env
+    container_name: chatify-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      GMAIL_USERNAME: ${GMAIL_USERNAME}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+    ports:
+      - "8080:8080"
+    volumes:
+      # 이 설정은 Hot Reload의 핵심이므로 그대로 둡니다.
+      - ./build/classes/java/main:/app/classes
+      - ./build/resources/main:/app/resources
+
+    # ❗️ JAR 실행 대신, 클래스 파일로 직접 앱을 실행하도록 command를 추가/수정합니다.
+    command: java -cp "resources:classes" org.springframework.boot.loader.launch.JarLauncher
+    networks:
+      - chatify-net
+
+networks:
+  chatify-net:
+    driver: bridge

@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: chatify
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/chatify_db
+    username : ${DB_USERNAME}
+    password : ${DB_PASSWORD}
+    driver-class-name : com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: redis
+      port: ${REDIS_PORT}
+
+  jpa:
+    hibernate:
+      ddl-auto : update
+    show-sql : true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: ${MAIL_PORT}
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_APP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  pending-token-expiration-ms: 300000  #5분
+  success-token-expiration-ms: 1800000 #30분
+
+

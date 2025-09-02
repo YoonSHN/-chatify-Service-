@@ -1,0 +1,28 @@
+# src/test/resources/application-test.yml
+
+spring:
+  data:
+    redis:
+      host: localhost
+      port: ${REDIS_PORT}
+  datasource:
+    url: jdbc:mysql://localhost:3306/chatify_db
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  # --- 🔽 아래 내용을 추가해주세요 🔽 ---
+  mail:
+    username: ${GMAIL_USERNAME} # 실제 계정일 필요 없음
+    password: ${GMAIL_APP_PASSWORD}     # 실제 비밀번호일 필요 없음
+
+jwt:
+  # 실제 키가 아닌, 테스트 전용의 아무 키나 여기에 직접 입력합니다.
+  secret-key: ${JWT_SECRET_KEY}
+  verification-token-expiration-ms: 600000
