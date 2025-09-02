@@ -34,7 +34,9 @@ spring:
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
-  pending-token-expiration-ms: 300000  #5분
-  success-token-expiration-ms: 1800000 #30분
+  pending-token-expiration-ms: ${JWT_PENDING_TOKEN_EXPIRATION_MS}  #5분
+  success-token-expiration-ms: ${JWT_SUCCESS_TOKEN_EXPIRATION_MS} #30분
+  access-token-expiration-ms: ${JWT_ACCESS_TOKEN_EXPIRATION_MS}
+  refresh-token-expiration-ms: ${JWT_REFRESH_TOKEN_EXPIRATION_MS}
 
 

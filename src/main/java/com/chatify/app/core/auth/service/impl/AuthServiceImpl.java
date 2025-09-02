@@ -15,6 +15,9 @@ import com.chatify.app.core.user.repository.UserRepository;
 import com.chatify.app.common.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,9 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
     private final StringRedisTemplate redisTemplate;
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
     private static final String VERIFICATION_CODE_PREFIX = "verify:code=>";
 
@@ -103,7 +109,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public TokenResponse login(LoginRequest loginRequest){
-        return new TokenResponse("1","1");
+        // 1. ID/PW를 기반으로 인증용 객체(UsernamePasswordAuthenticationToken) 생성
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+        String accessToken = jwtUtil.createAccessToken(authentication);
+        String refreshToken = jwtUtil.createRefreshToken(authentication);
+
+        return new TokenResponse(accessToken, refreshToken);
+
 
     }
 
