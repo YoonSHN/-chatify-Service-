@@ -1,6 +1,8 @@
 spring:
   application:
     name: chatify
+  profiles:
+    include: oauth2
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/chatify_db
     username : ${DB_USERNAME}
