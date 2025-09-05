@@ -1,14 +1,13 @@
 package com.chatify.app.core.auth.controller;
 
-import com.chatify.app.core.auth.dto.request.LoginRequest;
-import com.chatify.app.core.auth.dto.request.SendCodeRequest;
-import com.chatify.app.core.auth.dto.request.SignupRequest;
+import com.chatify.app.core.auth.domain.Provider;
+import com.chatify.app.core.auth.dto.request.*;
 
-import com.chatify.app.core.auth.dto.request.VerifyCodeRequest;
 import com.chatify.app.core.auth.dto.response.TokenResponse;
 import com.chatify.app.core.auth.dto.response.VerificationToken;
 import com.chatify.app.core.auth.service.AuthService;
 import com.chatify.app.common.response.ApiResponse;
+import com.chatify.app.core.auth.service.OAuth2Service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final OAuth2Service oAuth2Service;
 
     //1. 인증 번호 발송 + 임시 인증 토큰(A) 발급 (인증 대기중)
     @PostMapping("/send-verification-code")
@@ -45,8 +45,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(HttpStatus.CREATED, "회원가입이 정상적으로 완료되었습니다."));
     }
-
-        /*
+    /*
     로그인
      */
     @PostMapping("/login")
@@ -58,7 +57,18 @@ public class AuthController {
     /*
     소셜 로그인 -> db에 회원이 존재하는지 검사 -> 있으면 소셜로그인 테이블만 추가,없으면 유저, 소셜 테이블 추가
      */
-//    @PostMapping("/social-login")
-//    public ResponseEntity<ApiResponse<>>
+    @PostMapping("/social-login")
+    public ResponseEntity<ApiResponse<TokenResponse>> socialLogin(
+            @PathVariable Provider provider,
+            @RequestBody SocialLoginRequest request){
+        TokenResponse response = oAuth2Service.socialLogin(provider, request.getAuthorizationCode());
+
+        return ResponseEntity.ok(ApiResponse.success(
+                HttpStatus.OK,
+                "소셜 로그인에 성공하였습니다.",
+                response
+        ));
+
+    }
 
 }

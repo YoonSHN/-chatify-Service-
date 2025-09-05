@@ -148,6 +148,4 @@ public class AuthServiceImpl implements AuthService {
         // 7. 생성된 토큰들을 DTO에 담아 반환
         return new TokenResponse(accessToken, refreshToken);
     }
-
-
 }
