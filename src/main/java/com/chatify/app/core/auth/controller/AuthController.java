@@ -54,21 +54,21 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(HttpStatus.OK, "로그인에 성공했습니다.", response));
     }
-    /*
-    소셜 로그인 -> db에 회원이 존재하는지 검사 -> 있으면 소셜로그인 테이블만 추가,없으면 유저, 소셜 테이블 추가
-     */
-    @PostMapping("/social-login/{provider}")
-    public ResponseEntity<ApiResponse<TokenResponse>> socialLogin(
-            @PathVariable Provider provider,
-            @RequestBody SocialLoginRequest request){
-        TokenResponse response = oAuth2Service.socialLogin(provider, request.getAuthorizationCode());
-
-        return ResponseEntity.ok(ApiResponse.success(
-                HttpStatus.OK,
-                "소셜 로그인에 성공하였습니다.",
-                response
-        ));
-
-    }
+//    /*
+//    소셜 로그인 -> db에 회원이 존재하는지 검사 -> 있으면 소셜로그인 테이블만 추가,없으면 유저, 소셜 테이블 추가
+//     */
+//    @PostMapping("/social-login/{provider}")
+//    public ResponseEntity<ApiResponse<TokenResponse>> socialLogin(
+//            @PathVariable Provider provider,
+//            @RequestBody SocialLoginRequest request){
+//        TokenResponse response = oAuth2Service.socialLogin(provider, request.getAuthorizationCode());
+//
+//        return ResponseEntity.ok(ApiResponse.success(
+//                HttpStatus.OK,
+//                "소셜 로그인에 성공하였습니다.",
+//                response
+//        ));
+//
+//    }
 
 }
