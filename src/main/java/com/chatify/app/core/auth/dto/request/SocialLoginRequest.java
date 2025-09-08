@@ -1,13 +1,12 @@
 package com.chatify.app.core.auth.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class SocialLoginRequest {
     private String authorizationCode;
 }

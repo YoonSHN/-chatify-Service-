@@ -42,3 +42,6 @@ jwt:
   refresh-token-expiration-ms: ${JWT_REFRESH_TOKEN_EXPIRATION_MS}
 
 
+logging:
+  level:
+    org.springframework.security: DEBUG

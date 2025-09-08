@@ -1,7 +1,6 @@
 package com.chatify.app.core.auth.dto.response;
 
 import com.chatify.app.core.auth.domain.Provider;
-import com.chatify.app.core.user.domain.ProviderType;
 import lombok.Builder;
 import lombok.Getter;
 

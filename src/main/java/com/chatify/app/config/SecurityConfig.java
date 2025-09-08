@@ -1,5 +1,7 @@
 package com.chatify.app.config;
 
+import com.chatify.app.common.config.JwtAuthenticationFilter; // 직접 만드셔야 하는 JWT 필터 클래스
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,10 +12,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor // 1. JwtAuthenticationFilter를 의존성 주입받기 위해 추가
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter; // 2. 직접 만든 JWT 필터 주입
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -23,17 +29,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF 보호 비활성화 (JWT 사용 시 보통 비활성화)
                 .csrf(csrf -> csrf.disable())
-                // 세션을 사용하지 않음 (Stateless 설정)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // HTTP 요청에 대한 접근 권한 설정
+                .formLogin(formLogin -> formLogin.disable())
+                .httpBasic(httpBasic -> httpBasic.disable()) // 3. httpBasic 인증 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        // "/api/auth/**" 경로의 모든 요청은 인증 없이 허용
                         .requestMatchers("/api/auth/**").permitAll()
-                        // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
-                );
+                )
+                // 4. JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
