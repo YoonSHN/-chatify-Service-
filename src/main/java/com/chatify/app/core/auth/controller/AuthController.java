@@ -7,7 +7,6 @@ import com.chatify.app.core.auth.dto.response.TokenResponse;
 import com.chatify.app.core.auth.dto.response.VerificationToken;
 import com.chatify.app.core.auth.service.AuthService;
 import com.chatify.app.common.response.ApiResponse;
-import com.chatify.app.core.auth.service.OAuth2Service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,9 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final OAuth2Service oAuth2Service;
-
     //1. 인증 번호 발송 + 임시 인증 토큰(A) 발급 (인증 대기중)
+
     @PostMapping("/send-verification-code")
     public ResponseEntity<ApiResponse<VerificationToken>> sendVerificationCode(@Valid @RequestBody SendCodeRequest request){
         VerificationToken response = authService.sendVerificationCode(request);

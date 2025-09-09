@@ -10,6 +10,7 @@ spring:
             client-id: ${GOOGLE_CLIENT}
             client-secret: ${GOOGLE_SECRET}
             redirect-uri:  ${GOOGLE_REDIRECT_URL}
+            authorization-grant-type: authorization_code
             scope:
               - profile
               - email
