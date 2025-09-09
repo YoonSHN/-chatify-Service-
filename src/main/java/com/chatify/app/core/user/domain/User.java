@@ -71,5 +71,11 @@ public class User {
         this.createdAt = LocalDateTime.now();
         this.status = UserStatus.ACTIVE;
     }
+    public User updateSocialProfile(String name) {
+        if (this.getUserProfile() != null) {
+            this.getUserProfile().updateName(name); // UserProfile의 이름 업데이트 메서드 호출
+        }
+        return this;
+    }
 
 }

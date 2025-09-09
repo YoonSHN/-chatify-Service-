@@ -69,4 +69,8 @@ public class UserProfile {
         return (this.nickname != null && !this.nickname.isBlank() ? this.nickname : this.realName);
     }
 
+    public void updateName(String name) {
+        this.realName = name;
+    }
+
 }
