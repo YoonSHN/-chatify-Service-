@@ -2,7 +2,6 @@ package com.chatify.app.core.auth.handler;
 
 import com.chatify.app.common.util.JwtUtil;
 import com.chatify.app.core.auth.domain.JwtRefreshToken;
-import com.chatify.app.core.auth.dto.response.OAuthAttributes;
 import com.chatify.app.core.auth.dto.response.TokenResponse;
 import com.chatify.app.core.auth.repository.JwtRefreshTokenRepository;
 import com.chatify.app.core.user.domain.User;
@@ -23,7 +22,7 @@ import java.io.IOException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
