@@ -1,7 +1,7 @@
 package com.chatify.app.config;
 
-import com.chatify.app.core.auth.handler.OAuth2AuthenticationFailureHandler;
-import com.chatify.app.core.auth.handler.OAuth2AuthenticationSuccessHandler;
+import com.chatify.app.core.auth.handler.OAuth2LoginFailureHandler;
+import com.chatify.app.core.auth.handler.OAuth2LoginSuccessHandler;
 import com.chatify.app.core.auth.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -33,10 +33,10 @@ public class SecurityConfig {
             "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**"
     };
 
-    private final OAuth2AuthenticationSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtAuthenticationFilter jwtAuthFilter;
-    private final OAuth2AuthenticationFailureHandler oAuth2LoginFailureHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     // 삭제: 일관된 예외 처리를 위한 핸들러 주입
     // private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

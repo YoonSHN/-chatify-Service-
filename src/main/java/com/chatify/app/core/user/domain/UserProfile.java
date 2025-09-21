@@ -2,6 +2,7 @@ package com.chatify.app.core.user.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -71,6 +72,13 @@ public class UserProfile {
 
     public void updateName(String name) {
         this.realName = name;
+    }
+
+    @Builder
+    public UserProfile(User user, String realName, LocalDate birthday) {
+        this.user = user;
+        this.realName = realName;
+        this.birthday = birthday;
     }
 
 }

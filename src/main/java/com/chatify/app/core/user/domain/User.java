@@ -9,6 +9,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="user")
@@ -51,6 +53,12 @@ public class User {
     @Column(name="deleted_at")
     private LocalDateTime deletedAt;
 
+    // User가 삭제되면 관련된 UserImage도 함께 삭제되도록 설정
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserImage> userImages = new ArrayList<>();
+
+
+
     @Builder
     public User(String email, String password, String phoneNumber) {
         this.password = password;
@@ -77,5 +85,11 @@ public class User {
         }
         return this;
     }
+    // 연관관계 편의 메서드: User에 이미지를 추가할 때 사용
+    public void addUserImage(UserImage userImage) {
+        this.userImages.add(userImage);
+    }
+
+
 
 }

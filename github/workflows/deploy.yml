@@ -1,0 +1,32 @@
+# .github/workflows/deploy.yml
+
+name: Deploy to EC2 on main push
+
+# main 브랜치에 push가 발생했을 때 이 워크플로우를 실행
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # 워크플로우를 실행할 가상 환경
+
+    steps:
+      # 1. GitHub Actions 서버로 코드 체크아웃
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # 2. EC2에 SSH로 접속하여 배포 스크립트 실행
+      - name: SSH into EC2 and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }} # GitHub Secret에서 IP 주소 가져오기
+          username: ${{ secrets.EC2_USERNAME }} # GitHub Secret에서 사용자 이름 가져오기
+          key: ${{ secrets.EC2_SSH_KEY }} # GitHub Secret에서 PEM 키 가져오기
+          script: | # EC2 인스턴스에서 실행할 명령어들
+            cd ~/fineapple-service
+            git pull origin main
+            docker-compose down
+            docker-compose up -d --build
+            docker image prune -f
